@@ -31,7 +31,7 @@ async function sendByText(data) {
                 remarks: 'The receiver number is not exists.',
             }
             console.log(result)
-            return response(res, 400, false, 'The receiver number is not exists.')
+            return result
         }
         await sendMessage(session, receiver, { text: message })
             .then(async (response) => {
@@ -289,7 +289,7 @@ const sendDirectImage = async (req, res) => {
             message: message,
             file: file,
         }
-        var result = await sendByDoc(data)
+        var result = await sendByImage(data)
         res.status(200).send(result)
     } catch (e) {
         res.status(200).send({ status: false, statusCode: 500, message: e.message })
