@@ -10,7 +10,7 @@ import https from 'https'
 import http from 'http'
 import bodyParser from 'body-parser'
 import cron from 'node-cron'
-import * as queue from './controllers/chatController.js'
+// import * as queue from './controllers/chatController.js'
 // import db from './models/index.js'
 import dateFormat from 'dateformat'
 

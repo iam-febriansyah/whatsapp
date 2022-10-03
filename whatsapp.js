@@ -12,9 +12,9 @@ import makeWASocket, {
 import { toDataURL } from 'qrcode'
 import __dirname from './dirname.js'
 import response from './response.js'
-import db from './models/index.js'
-import * as queue from './controllers/chatController.js'
-import cron from 'node-cron'
+// import db from './models/index.js'
+// import * as queue from './controllers/chatController.js'
+// import cron from 'node-cron'
 import dateFormat from 'dateformat'
 var dateNow = dateFormat(new Date(), 'yyyy-mm-dd hh:MM:ss')
 
