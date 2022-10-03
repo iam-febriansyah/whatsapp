@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import sessionRoutes from './routes/sessionRoutes.js'
+import checkRoutes from './routes/checkRoutes.js'
 // import chatRoutes from './routes/chatRoutes.js'
 import chatDirectRoutes from './routes/chatDirectRoutes.js'
 // import groupRoutes from './routes/groupRoutes.js'
@@ -10,6 +11,7 @@ const router = Router()
 router.use('/session', sessionRoutes)
 // router.use('', chatRoutes)
 router.use('', chatDirectRoutes)
+router.use('', checkRoutes)
 // router.use('/group', groupRoutes)
 
 router.all('*', (req, res) => {
