@@ -4,6 +4,7 @@ import phoneNumberFormatter from './../helpers/formatter.js'
 import db from './../models/index.js'
 import dateFormat from 'dateformat'
 import fetch from 'node-fetch'
+import e from 'express'
 
 const Message = db.message
 const Device = db.device
@@ -23,42 +24,53 @@ async function sendByText(data) {
     const receiver = phoneNumberFormatter(number)
 
     try {
-        const exists = await isExists(session, receiver)
-        if (!exists) {
+        if (session != null) {
+            const exists = await isExists(session, receiver)
+            if (!exists) {
+                result = {
+                    deviceId: data.device_id,
+                    statusCode: 500,
+                    remarks: 'The receiver number is not exists.',
+                }
+                console.log(result)
+                return result
+            }
+            await sendMessage(session, receiver, { text: message })
+                .then(async (response) => {
+                    var messageId = response.key.id
+                    var messageStatus = response.status
+                    result = {
+                        deviceId: data.device_id,
+                        statusCode: 200,
+                        remarks: 'Sent Message Successfully',
+                        data: {
+                            messageId: messageId,
+                            messageStatus: messageStatus,
+                        },
+                    }
+                    console.log(result)
+                    return result
+                })
+                .catch((err) => {
+                    result = {
+                        deviceId: data.device_id,
+                        statusCode: 500,
+                        remarks: 'Failed',
+                        error: err.toString(),
+                    }
+                    console.log(result)
+                    return result
+                })
+        } else {
             result = {
                 deviceId: data.device_id,
                 statusCode: 500,
-                remarks: 'The receiver number is not exists.',
+                remarks: 'Failed',
+                error: 'Session not found, please scan before',
             }
             console.log(result)
             return result
         }
-        await sendMessage(session, receiver, { text: message })
-            .then(async (response) => {
-                var messageId = response.key.id
-                var messageStatus = response.status
-                result = {
-                    deviceId: data.device_id,
-                    statusCode: 200,
-                    remarks: 'Sent Message Successfully',
-                    data: {
-                        messageId: messageId,
-                        messageStatus: messageStatus,
-                    },
-                }
-                console.log(result)
-                return result
-            })
-            .catch((err) => {
-                result = {
-                    deviceId: data.device_id,
-                    statusCode: 500,
-                    remarks: 'Failed',
-                    error: err.toString(),
-                }
-                console.log(result)
-                return result
-            })
     } catch (err) {
         result = {
             deviceId: data.device_id,
@@ -84,44 +96,54 @@ async function sendByDoc(data) {
         if (response.status == 200) {
             const session = getSession(device_id)
             const receiver = phoneNumberFormatter(number)
-
-            try {
-                await sendMessage(session, receiver, {
-                    document: { url: file },
-                    fileName: message,
-                    mimetype: 'application/pdf',
-                })
-                    .then(async (response) => {
-                        var messageId = response.key.id
-                        var messageStatus = response.status
-                        result = {
-                            deviceId: data.device_id,
-                            statusCode: 200,
-                            remarks: 'Sent Message Successfully',
-                            data: {
-                                messageId: messageId,
-                                messageStatus: messageStatus,
-                            },
-                        }
-                        console.log(result)
-                        return result
+            if (session != null) {
+                try {
+                    await sendMessage(session, receiver, {
+                        document: { url: file },
+                        fileName: message,
+                        mimetype: 'application/pdf',
                     })
-                    .catch((err) => {
-                        result = {
-                            deviceId: data.device_id,
-                            statusCode: 500,
-                            remarks: 'Failed',
-                            error: err == null ? 'null' : err.toString(),
-                        }
-                        console.log(result)
-                        return result
-                    })
-            } catch (err) {
+                        .then(async (response) => {
+                            var messageId = response.key.id
+                            var messageStatus = response.status
+                            result = {
+                                deviceId: data.device_id,
+                                statusCode: 200,
+                                remarks: 'Sent Message Successfully',
+                                data: {
+                                    messageId: messageId,
+                                    messageStatus: messageStatus,
+                                },
+                            }
+                            console.log(result)
+                            return result
+                        })
+                        .catch((err) => {
+                            result = {
+                                deviceId: data.device_id,
+                                statusCode: 500,
+                                remarks: 'Failed',
+                                error: err == null ? 'null' : err.toString(),
+                            }
+                            console.log(result)
+                            return result
+                        })
+                } catch (err) {
+                    result = {
+                        deviceId: data.device_id,
+                        statusCode: 500,
+                        remarks: 'Failed',
+                        error: err == null ? 'null' : err.toString(),
+                    }
+                    console.log(result)
+                    return result
+                }
+            } else {
                 result = {
                     deviceId: data.device_id,
                     statusCode: 500,
                     remarks: 'Failed',
-                    error: err == null ? 'null' : err.toString(),
+                    error: 'Session not found, please scan before',
                 }
                 console.log(result)
                 return result
@@ -164,58 +186,68 @@ async function sendByImage(data) {
         if (response.status == 200) {
             const session = getSession(device_id)
             const receiver = phoneNumberFormatter(number)
-
-            try {
-                const exists = await isExists(session, receiver)
-                if (!exists) {
-                    result = {
-                        deviceId: data.device_id,
-                        statusCode: 500,
-                        remarks: 'The receiver number is not exists.',
-                    }
-                    console.log(result)
-                    return response(res, 400, false, 'The receiver number is not exists.')
-                }
-
-                await sendMessage(session, receiver, {
-                    image: { url: file },
-                    caption: message,
-                    mimetype: 'image/jpeg',
-                })
-                    .then(async (response) => {
-                        var messageId = response.key.id
-                        var messageStatus = response.status
-                        result = {
-                            deviceId: data.device_id,
-                            statusCode: 200,
-                            remarks: 'Sent Message Successfully',
-                            data: {
-                                messageId: messageId,
-                                messageStatus: messageStatus,
-                            },
-                        }
-                        console.log(result)
-                        return result
-                    })
-                    .catch((err) => {
+            if (session != null) {
+                try {
+                    const exists = await isExists(session, receiver)
+                    if (!exists) {
                         result = {
                             deviceId: data.device_id,
                             statusCode: 500,
-                            remarks: 'Failed',
-                            error: err.toString(),
+                            remarks: 'The receiver number is not exists.',
                         }
                         console.log(result)
-                        return result
+                        return response(res, 400, false, 'The receiver number is not exists.')
+                    }
+
+                    await sendMessage(session, receiver, {
+                        image: { url: file },
+                        caption: message,
+                        mimetype: 'image/jpeg',
                     })
-            } catch (err) {
+                        .then(async (response) => {
+                            var messageId = response.key.id
+                            var messageStatus = response.status
+                            result = {
+                                deviceId: data.device_id,
+                                statusCode: 200,
+                                remarks: 'Sent Message Successfully',
+                                data: {
+                                    messageId: messageId,
+                                    messageStatus: messageStatus,
+                                },
+                            }
+                            console.log(result)
+                            return result
+                        })
+                        .catch((err) => {
+                            result = {
+                                deviceId: data.device_id,
+                                statusCode: 500,
+                                remarks: 'Failed',
+                                error: err.toString(),
+                            }
+                            console.log(result)
+                            return result
+                        })
+                } catch (err) {
+                    result = {
+                        deviceId: data.device_id,
+                        statusCode: 500,
+                        remarks: 'Failed',
+                        error: 'Failed to send the message',
+                    }
+                    console.log(result)
+                    await updateStatus(idMessage, '7', err.toString())
+                    return result
+                }
+            } else {
                 result = {
                     deviceId: data.device_id,
                     statusCode: 500,
                     remarks: 'Failed',
-                    error: 'Failed to send the message',
+                    error: 'Session not found, please scan before',
                 }
                 console.log(result)
-                await updateStatus(idMessage, '7', err.toString())
                 return result
             }
         } else {
