@@ -55,7 +55,7 @@ const shouldReconnect = (sessionId) => {
     return false
 }
 
-const talicreateSession = async (sessionId, isLegacy = false, res = null) => {
+const createSession = async (sessionId, isLegacy = false, res = null) => {
     const sessionFile = (isLegacy ? 'legacy_' : 'md_') + sessionId
     console.log(sessionId)
     const store = makeInMemoryStore({})
