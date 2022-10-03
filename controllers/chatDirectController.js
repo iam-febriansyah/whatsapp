@@ -1,18 +1,6 @@
-import { getSession, getChatList, isExists, sendMessage, formatPhone } from './../whatsapp.js'
-import response from './../response.js'
+import { getSession, isExists, sendMessage, formatPhone } from './../whatsapp.js'
 import phoneNumberFormatter from './../helpers/formatter.js'
-import db from './../models/index.js'
-import dateFormat from 'dateformat'
 import fetch from 'node-fetch'
-import e from 'express'
-
-const Message = db.message
-const Device = db.device
-const MessageStatus = db.message_status
-const Op = db.Sequelize.Op
-const sequelize = db.sequelize
-var dateNow = dateFormat(new Date(), 'yyyy-mm-dd hh:MM:ss')
-var jid_phone = ''
 
 async function sendByText(data) {
     var result = new Array()
