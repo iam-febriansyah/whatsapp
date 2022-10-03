@@ -63,8 +63,8 @@ async function sendByText(data) {
         result = {
             deviceId: data.device_id,
             statusCode: 500,
-            remarks: 'Failed',
-            error: 'Failed to send the message',
+            remarks: 'Failed to send the message',
+            error: err,
         }
         return result
     }
