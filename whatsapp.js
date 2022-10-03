@@ -18,9 +18,9 @@ import response from './response.js'
 import dateFormat from 'dateformat'
 var dateNow = dateFormat(new Date(), 'yyyy-mm-dd hh:MM:ss')
 
-const Message = db.message
-const Device = db.device
-const MessageStatus = db.message_status
+// const Message = db.message
+// const Device = db.device
+// const MessageStatus = db.message_status
 
 const sessions = new Map()
 const retries = new Map()
@@ -319,25 +319,25 @@ const init = () => {
 
 init()
 
-function updateDisconected(device_id, status) {
-    let values = {
-        status: status ? 'true' : 'false',
-        last_status_update: dateNow,
-    }
-    Device.update(values, { where: { device_id: device_id } })
-}
+// function updateDisconected(device_id, status) {
+//     let values = {
+//         status: status ? 'true' : 'false',
+//         last_status_update: dateNow,
+//     }
+//     Device.update(values, { where: { device_id: device_id } })
+// }
 
-function updateStatusChat(message_id, status_message) {
-    let values = { status_message: status_message }
-    Message.update(values, { where: { message_id: message_id } })
-    MessageStatus.findOne({
-        where: { message_id: message_id, status: status_message },
-    }).then((res) => {
-        if (!res) {
-            MessageStatus.create({ message_id: message_id, status: status_message })
-        }
-    })
-}
+// function updateStatusChat(message_id, status_message) {
+//     let values = { status_message: status_message }
+//     Message.update(values, { where: { message_id: message_id } })
+//     MessageStatus.findOne({
+//         where: { message_id: message_id, status: status_message },
+//     }).then((res) => {
+//         if (!res) {
+//             MessageStatus.create({ message_id: message_id, status: status_message })
+//         }
+//     })
+// }
 
 export {
     isSessionExists,
