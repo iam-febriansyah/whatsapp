@@ -94,7 +94,7 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
             if (msg.key.fromMe) {
                 var message_id = msg.key.id
                 var status_message = msg.update.status
-                updateStatusChat(message_id, status_message)
+                // updateStatusChat(message_id, status_message)
             }
         }
     })
