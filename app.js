@@ -63,7 +63,7 @@ async function stopLastCron() {
     // console.log(cronStorage);
     // cronStorage[dateNow].destroy();
     // console.log("END STOP CRON");
-    await createNewCron()
+    // await createNewCron()
 }
 
 async function createNewCron() {
