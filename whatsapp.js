@@ -109,7 +109,7 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
         console.log('UPDATE CONNECTION : ' + sessionId)
         // console.log(update);
         if (update.receivedPendingNotifications) {
-            updateDisconected(sessionId, true)
+            // updateDisconected(sessionId, true)
 
             var newcon = `con${sessionId}`
 
@@ -210,7 +210,7 @@ const deleteSession = (sessionId, isLegacy = false) => {
 
     sessions.delete(sessionId)
     retries.delete(sessionId)
-    updateDisconected(sessionId, false)
+    // updateDisconected(sessionId, false)
 }
 
 const getChatList = (sessionId, isGroup = false) => {
