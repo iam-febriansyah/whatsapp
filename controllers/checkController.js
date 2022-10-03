@@ -8,7 +8,7 @@ const connected = async (req, res) => {
 
 const restart = async (req, res) => {
     try {
-        process.exit(1)
+        process.exit()
     } catch (e) {
         res.status(200).send({ status: false, statusCode: 500, message: e.message })
     }
