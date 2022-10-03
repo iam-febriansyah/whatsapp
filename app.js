@@ -7,13 +7,14 @@ import cors from 'cors'
 import { Server } from 'socket.io'
 import fs from 'fs'
 import https from 'https'
+import http from 'http'
 import bodyParser from 'body-parser'
 import cron from 'node-cron'
 import * as queue from './controllers/chatController.js'
-import db from './models/index.js'
+// import db from './models/index.js'
 import dateFormat from 'dateformat'
 
-const Device = db.device
+// const Device = db.device
 const app = express()
 const host = process.env.HOST ?? '127.0.0.1'
 const port = parseInt(process.env.PORT ?? 8000)
@@ -22,7 +23,7 @@ var dateNow = dateFormat(new Date(), 'yyyymmddhhMMss')
 var cronStorage = {}
 
 var corsOptions = {
-    // origin: "*"
+    origin: '*',
 }
 
 app.all('*', function (req, res, next) {
@@ -38,12 +39,13 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/', routes)
 
-var privateKey = fs.readFileSync('/etc/letsencrypt/live/eazynotif.id/privkey.pem', 'utf8')
-var certificate = fs.readFileSync('/etc/letsencrypt/live/eazynotif.id/cert.pem', 'utf8')
-var credentials = { key: privateKey, cert: certificate }
-var httpsServer = https.createServer(credentials, app)
+// var privateKey = fs.readFileSync('/etc/letsencrypt/live/eazynotif.id/privkey.pem', 'utf8')
+// var certificate = fs.readFileSync('/etc/letsencrypt/live/eazynotif.id/cert.pem', 'utf8')
+// var credentials = { key: privateKey, cert: certificate }
+// var httpsServer = https.createServer(credentials, app)
 
-const io = new Server(httpsServer, {
+var httpServer = http.createServer(app)
+const io = new Server(httpServer, {
     cors: {
         origin: [process.env.ORIGIN, '*'],
         methods: ['GET', 'POST'],
@@ -70,31 +72,31 @@ async function createNewCron() {
         var wait = getWaiting() * 1000
         console.log(wait)
         setTimeout(function () {
-            sendMessage()
+            // sendMessage()
         }, wait)
     })
     cronStorage[dateNow] = task
     console.log(cronStorage)
 }
 
-async function sendMessage() {
-    var data = await Device.findAll({
-        where: { status: 'true' },
-    }).then(async (res) => {
-        for (let index = 0; index < res.length; index++) {
-            const element = res[index]
-            var sessionId = element.device_id
-            queue.sendMessageQueue(sessionId)
-        }
-    })
-}
+// async function sendMessage() {
+//     var data = await Device.findAll({
+//         where: { status: 'true' },
+//     }).then(async (res) => {
+//         for (let index = 0; index < res.length; index++) {
+//             const element = res[index]
+//             var sessionId = element.device_id
+//             queue.sendMessageQueue(sessionId)
+//         }
+//     })
+// }
 
 function getWaiting() {
     return Math.floor(Math.random() * 5) + 1
 }
 
-httpsServer.setTimeout(30000)
-httpsServer.listen(port, () => {
+httpServer.setTimeout(30000)
+httpServer.listen(port, () => {
     console.log(`Server is running on `)
 })
 
