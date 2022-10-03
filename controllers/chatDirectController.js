@@ -23,7 +23,7 @@ async function sendByText(data) {
                 console.log(result)
                 return result
             }
-            await sendMessage(session, receiver, { text: message })
+            return await sendMessage(session, receiver, { text: message })
                 .then(async (response) => {
                     var messageId = response.key.id
                     var messageStatus = response.status
@@ -86,7 +86,7 @@ async function sendByDoc(data) {
             const receiver = phoneNumberFormatter(number)
             if (session != null) {
                 try {
-                    await sendMessage(session, receiver, {
+                    return await sendMessage(session, receiver, {
                         document: { url: file },
                         fileName: message,
                         mimetype: 'application/pdf',
@@ -187,7 +187,7 @@ async function sendByImage(data) {
                         return response(res, 400, false, 'The receiver number is not exists.')
                     }
 
-                    await sendMessage(session, receiver, {
+                    return await sendMessage(session, receiver, {
                         image: { url: file },
                         caption: message,
                         mimetype: 'image/jpeg',
@@ -225,7 +225,6 @@ async function sendByImage(data) {
                         error: 'Failed to send the message',
                     }
                     console.log(result)
-                    await updateStatus(idMessage, '7', err.toString())
                     return result
                 }
             } else {
