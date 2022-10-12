@@ -280,7 +280,7 @@ const sendDirectDoc = async (req, res) => {
     try {
         var device_id = req.body.device_id
         var number = phoneNumberFormatter(req.body.number)
-        var message = req.body.caption
+        var message = req.body.message
         var file = req.body.file
         var data = {
             device_id: device_id,
@@ -300,7 +300,7 @@ const sendDirectImage = async (req, res) => {
         var device_id = req.body.device_id
         var number = phoneNumberFormatter(req.body.number)
         var realNumber = req.body.number
-        var message = req.body.caption
+        var message = req.body.message
         var file = req.body.file
         var data = {
             device_id: device_id,
@@ -315,4 +315,59 @@ const sendDirectImage = async (req, res) => {
     }
 }
 
-export { sendDirectText, sendDirectDoc, sendDirectImage }
+const sendDirectTextGet = async (req, res) => {
+    try {
+        var device_id = req.query.device_id
+        var number = phoneNumberFormatter(req.query.number)
+        var message = req.query.message
+        var data = {
+            device_id: device_id,
+            number: number,
+            message: message,
+        }
+        var result = await sendByText(data)
+        res.status(200).send(result)
+    } catch (e) {
+        res.status(200).send({ status: false, statusCode: 500, message: e.message })
+    }
+}
+
+const sendDirectDocGet = async (req, res) => {
+    try {
+        var device_id = req.query.device_id
+        var number = phoneNumberFormatter(req.query.number)
+        var message = req.query.message
+        var file = req.query.file
+        var data = {
+            device_id: device_id,
+            number: number,
+            message: message,
+            file: file,
+        }
+        var result = await sendByDoc(data)
+        res.status(200).send(result)
+    } catch (e) {
+        res.status(200).send({ status: false, statusCode: 500, message: e.message })
+    }
+}
+
+const sendDirectImageGet = async (req, res) => {
+    try {
+        var device_id = req.query.device_id
+        var number = phoneNumberFormatter(req.query.number)
+        var realNumber = req.query.number
+        var message = req.query.message
+        var file = req.query.file
+        var data = {
+            device_id: device_id,
+            number: number,
+            message: message,
+            file: file,
+        }
+        var result = await sendByImage(data)
+        res.status(200).send(result)
+    } catch (e) {
+        res.status(200).send({ status: false, statusCode: 500, message: e.message })
+    }
+}
+export { sendDirectText, sendDirectDoc, sendDirectImage, sendDirectTextGet, sendDirectDocGet, sendDirectImageGet }
